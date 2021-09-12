@@ -36,7 +36,7 @@ public class EncryptionMachine {
         for (int i = 0; i < decryptedText.length(); i++) {
             decryptedText.setCharAt(i, (char) ((int) decryptedText.charAt(i) - getKeyCode(key)));
         }
-        System.out.println("Message decrypted via inputed key");
+        System.out.println("Message decrypted via inputted key");
     }
 
     private int getKeyCode(String key) {
