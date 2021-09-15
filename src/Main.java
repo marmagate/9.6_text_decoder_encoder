@@ -1,12 +1,20 @@
+import java.io.*;
+
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        EncryptionMachine test1 = new EncryptionMachine(new StringBuilder("TOP SECRET INFORMATION"));
+        EncryptionMachine secretInformation = new EncryptionMachine(new StringBuilder("TOP SECRET INFORMATION"));
 
-        test1.encrypt("123");
-        System.out.println(test1.encryptedText);
+        FileReader keyReader = new FileReader("keyPhrase.txt");
+        FileOutputStream textDecryptor = new FileOutputStream("decryption.txt");
 
-        test1.decrypt("123");
-        System.out.println(test1.decryptedText);
+        char[] buffer = new char[255];
+        int length = keyReader.read(buffer);
+        String keyReaderString = new String(buffer);
+        keyReader.close();
+
+        secretInformation.decrypt(keyReaderString);
+        textDecryptor.write(secretInformation.decryptedText.toString().getBytes());
+        textDecryptor.close();
     }
 }
