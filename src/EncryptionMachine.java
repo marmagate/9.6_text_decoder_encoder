@@ -1,4 +1,7 @@
-import java.io.*;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -79,11 +82,11 @@ public class EncryptionMachine {
     }
 
     private void setValuesToFiles() throws IOException {
-        FileWriter encWriter = new FileWriter("encryption.txt");
+        FileWriter encWriter = new FileWriter("encryption.txt", StandardCharsets.UTF_8);
         encWriter.write(encryptionText);
         encWriter.close();
 
-        FileWriter decWriter = new FileWriter("decryption.txt");
+        FileWriter decWriter = new FileWriter("decryption.txt", StandardCharsets.UTF_8);
         decWriter.write(decryptionText);
         decWriter.close();
     }
