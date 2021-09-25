@@ -1,9 +1,11 @@
-import java.io.IOException;
-
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
-        EncryptionMachine encryptionMachine = new EncryptionMachine();
-        encryptionMachine.metaMethod();
+        try {
+            EncryptionMachine encryptionMachine = new EncryptionMachine();
+            encryptionMachine.metaMethod();
+        } catch (ConvertException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

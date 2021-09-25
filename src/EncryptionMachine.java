@@ -1,6 +1,4 @@
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -11,84 +9,132 @@ public class EncryptionMachine {
     private String encryptionText = "";
     private String decryptionText = "";
 
-    public void metaMethod() throws IOException {
+    public void metaMethod() throws ConvertException {
         getValuesFromFiles();
         encrypt();
         decrypt();
         setValuesToFiles();
     }
 
-    private void getValuesFromFiles() throws IOException {
+    private void getValuesFromFiles() throws ConvertException {
         // getting decode word
-        FileReader keyReader = new FileReader("keyPhrase.txt");
-        int dwLength;
+        FileReader keyReader;
         StringBuilder sbDWord = new StringBuilder(SECRET_KEY);
-        while ((dwLength = keyReader.read()) != -1) {
+        int dwLength;
+        try {
+            keyReader = new FileReader("keyPhrase.txt");
+        } catch (FileNotFoundException e) {
+            throw new ConvertException("Не удалось открыть файл: " + e.getMessage());
+        }
+        while (true) {
+            try {
+                if ((dwLength = keyReader.read()) == -1) break;
+            } catch (IOException e) {
+                throw new ConvertException("Something went wrong: " + e.getMessage());
+            }
             sbDWord.append((char) dwLength);
         }
         SECRET_KEY = sbDWord.toString();
-        keyReader.close();
+        try {
+            keyReader.close();
+        } catch (IOException e) {
+            throw new ConvertException("Error closing stream: " + e.getMessage());
+        }
 
         // working with enc file
-        FileReader encReader = new FileReader("encryption.txt");
-        int encLength;
+        FileReader encReader;
         StringBuilder sbEnc = new StringBuilder(encryptionText);
-        while ((encLength = encReader.read()) != -1) {
+        int encLength;
+        try {
+            encReader = new FileReader("encryption.txt");
+        } catch (FileNotFoundException e) {
+            throw new ConvertException("File not found: " + e.getMessage());
+        }
+        while (true) {
+            try {
+                if ((encLength = encReader.read()) == -1) break;
+            } catch (IOException e) {
+                throw new ConvertException("Something went wrong: " + e.getMessage());
+            }
             sbEnc.append((char) encLength);
         }
         encryptionText = sbEnc.toString();
-        encReader.close();
+        try {
+            encReader.close();
+        } catch (IOException e) {
+            throw new ConvertException("Error closing stream: " + e.getMessage());
+        }
 
         // working with dec file
-        FileReader decReader = new FileReader("decryption.txt");
-        int decLength;
+        FileReader decReader;
         StringBuilder sbDec = new StringBuilder(decryptionText);
-        while ((decLength = decReader.read()) != -1) {
+        int decLength;
+        try {
+            decReader = new FileReader("decryption.txt");
+        } catch (FileNotFoundException e) {
+            throw new ConvertException("File not found: " + e.getMessage());
+        }
+        while (true) {
+            try {
+                if ((decLength = decReader.read()) == -1) break;
+            } catch (IOException e) {
+                throw new ConvertException("Something went wrong: " + e.getMessage());
+            }
             sbDec.append((char) decLength);
         }
         decryptionText = sbDec.toString();
-        decReader.close();
-    }
-
-    private void encrypt() throws IOException {
-        FileReader fileReader = new FileReader("encryption.txt");
-        if (fileReader.read() != -1) {
-            // getting encryption time
-            Calendar calendar = Calendar.getInstance();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss");
-            String date = dateFormat.format(calendar.getTime());
-            // adding date to StringBuilder
-            StringBuilder sbEnc = new StringBuilder(encryptionText);
-            sbEnc.append("\n").append(date);
-            // encrypting the message via loop (+++)
-            for (int i = 0; i < sbEnc.length(); i++) {
-                sbEnc.setCharAt(i, (char) ((int) sbEnc.charAt(i) + getKeyCode(SECRET_KEY)));
-            }
-            System.out.println("Message encrypted");
-            encryptionText = sbEnc.toString();
+        try {
+            decReader.close();
+        } catch (IOException e) {
+            throw new ConvertException("Error closing stream: " + e.getMessage());
         }
     }
 
-    private void decrypt() throws IOException {
-        FileReader fileReader = new FileReader("decryption.txt");
-        if ((fileReader.read()) != -1) {
-            StringBuilder sbDec = new StringBuilder(decryptionText);
-            for (int i = 0; i < sbDec.length(); i++) {
-                sbDec.setCharAt(i, (char) ((int) sbDec.charAt(i) - getKeyCode(SECRET_KEY)));
+    private void encrypt() throws ConvertException {
+        try (FileReader fileReader = new FileReader("encryption.txt")) {
+            if (fileReader.read() != -1) {
+                // getting encryption time
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss");
+                String date = dateFormat.format(calendar.getTime());
+                // adding date to StringBuilder
+                StringBuilder sbEnc = new StringBuilder(encryptionText);
+                sbEnc.append("\n").append(date);
+                // encrypting the message via loop (+++)
+                for (int i = 0; i < sbEnc.length(); i++) {
+                    sbEnc.setCharAt(i, (char) ((int) sbEnc.charAt(i) + getKeyCode(SECRET_KEY)));
+                }
+                System.out.println("Message encrypted");
+                encryptionText = sbEnc.toString();
             }
-            System.out.println("Message decrypted via inputted key");
-            decryptionText = sbDec.toString();
+        } catch (IOException e) {
+            throw new ConvertException("Smth wrong with file reading: " + e.getMessage());
         }
     }
 
-    private void setValuesToFiles() throws IOException {
-        FileWriter encWriter = new FileWriter("encryption.txt", StandardCharsets.UTF_8);
-        encWriter.write(encryptionText);
-        encWriter.close();
+    private void decrypt() throws ConvertException {
+        try (FileReader fileReader = new FileReader("decryption.txt")) {
+            if ((fileReader.read()) != -1) {
+                StringBuilder sbDec = new StringBuilder(decryptionText);
+                for (int i = 0; i < sbDec.length(); i++) {
+                    sbDec.setCharAt(i, (char) ((int) sbDec.charAt(i) - getKeyCode(SECRET_KEY)));
+                }
+                System.out.println("Message decrypted via inputted key");
+                decryptionText = sbDec.toString();
+            }
+        } catch (IOException e) {
+            throw new ConvertException("Smth wrong with file reading: " + e.getMessage());
+        }
+    }
 
-        FileWriter decWriter = new FileWriter("decryption.txt", StandardCharsets.UTF_8);
-        decWriter.write(decryptionText);
-        decWriter.close();
+    private void setValuesToFiles() throws ConvertException {
+        try (FileWriter encWriter = new FileWriter("encryption.txt", StandardCharsets.UTF_8);
+             FileWriter decWriter = new FileWriter("decryption.txt", StandardCharsets.UTF_8)) {
+            encWriter.write(encryptionText);
+            decWriter.write(decryptionText);
+        } catch (IOException e) {
+            throw new ConvertException("Smth wrong with file writing: " + e.getMessage());
+        }
     }
 
     private int getKeyCode(String key) {
@@ -98,5 +144,11 @@ public class EncryptionMachine {
             keyCode += key.charAt(i);
         }
         return keyCode;
+    }
+}
+
+class ConvertException extends IOException {
+    public ConvertException(String message) {
+        super(message);
     }
 }

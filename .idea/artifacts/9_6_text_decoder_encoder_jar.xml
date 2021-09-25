@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="9.6_text_decoder_encoder:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/9_6_text_decoder_encoder_jar</output-path>
+    <root id="archive" name="9.6_text_decoder_encoder.jar">
+      <element id="module-output" name="9.6_text_decoder_encoder" />
+    </root>
+  </artifact>
+</component>
