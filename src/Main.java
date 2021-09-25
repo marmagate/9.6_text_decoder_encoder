@@ -1,12 +1,9 @@
+import java.io.IOException;
+
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        EncryptionMachine test1 = new EncryptionMachine(new StringBuilder("TOP SECRET INFORMATION"));
-
-        test1.encrypt("123");
-        System.out.println(test1.encryptedText);
-
-        test1.decrypt("123");
-        System.out.println(test1.decryptedText);
+        EncryptionMachine encryptionMachine = new EncryptionMachine();
+        encryptionMachine.metaMethod();
     }
 }
