@@ -18,13 +18,15 @@ public class EncryptionMachine {
 
     private void getValuesFromFiles() throws ConvertException {
         // getting decode word
-        FileReader keyReader;
+        Reader keyReader;
         StringBuilder sbDWord = new StringBuilder(SECRET_KEY);
         int dwLength;
         try {
-            keyReader = new FileReader("keyPhrase.txt");
+            keyReader = new FileReader("keyPhrase.txt", StandardCharsets.UTF_8);
         } catch (FileNotFoundException e) {
-            throw new ConvertException("Не удалось открыть файл: " + e.getMessage());
+            throw new ConvertException("Something with file opening: " + e.getMessage());
+        } catch (IOException e) {
+            throw new ConvertException("Something went wrong: " + e.getMessage());
         }
         while (true) {
             try {
@@ -46,9 +48,11 @@ public class EncryptionMachine {
         StringBuilder sbEnc = new StringBuilder(encryptionText);
         int encLength;
         try {
-            encReader = new FileReader("encryption.txt");
+            encReader = new FileReader("encryption.txt", StandardCharsets.UTF_8);
         } catch (FileNotFoundException e) {
             throw new ConvertException("File not found: " + e.getMessage());
+        } catch (IOException e) {
+            throw new ConvertException("Something went wrong: " + e.getMessage());
         }
         while (true) {
             try {
@@ -70,9 +74,11 @@ public class EncryptionMachine {
         StringBuilder sbDec = new StringBuilder(decryptionText);
         int decLength;
         try {
-            decReader = new FileReader("decryption.txt");
+            decReader = new FileReader("decryption.txt", StandardCharsets.UTF_8);
         } catch (FileNotFoundException e) {
             throw new ConvertException("File not found: " + e.getMessage());
+        } catch (IOException e) {
+            throw new ConvertException("Something went wrong: " + e.getMessage());
         }
         while (true) {
             try {
@@ -91,7 +97,7 @@ public class EncryptionMachine {
     }
 
     private void encrypt() throws ConvertException {
-        try (FileReader fileReader = new FileReader("encryption.txt")) {
+        try (FileReader fileReader = new FileReader("encryption.txt", StandardCharsets.UTF_8)) {
             if (fileReader.read() != -1) {
                 // getting encryption time
                 Calendar calendar = Calendar.getInstance();
@@ -113,7 +119,7 @@ public class EncryptionMachine {
     }
 
     private void decrypt() throws ConvertException {
-        try (FileReader fileReader = new FileReader("decryption.txt")) {
+        try (FileReader fileReader = new FileReader("decryption.txt", StandardCharsets.UTF_8)) {
             if ((fileReader.read()) != -1) {
                 StringBuilder sbDec = new StringBuilder(decryptionText);
                 for (int i = 0; i < sbDec.length(); i++) {
